@@ -1,0 +1,24 @@
+{
+	"name": "C# .NET 9.0",
+	"build": {
+		"dockerfile": "./Dockerfile",
+		"context": "."
+	},
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csdevkit",
+				"k--kato.docomment",
+				"kreativ-software.csharpextensions",
+				"ms-azuretools.vscode-docker"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	},
+	"postCreateCommand": "dotnet restore ./CSharpApi/CSharpApi.csproj"
+}
