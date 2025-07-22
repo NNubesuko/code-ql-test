@@ -1,2 +1,5 @@
-CSharpApi/bin
-CSharpApi/obj
+.vs
+packages
+WebFormApplication2/bin
+WebFormApplication2/obj
+WebFormApplication2/appSettings.config
