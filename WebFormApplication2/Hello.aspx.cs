@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Web.UI;
@@ -35,8 +36,10 @@ namespace WebFormApplication2
 
                 var command =
                     new SqlCommand(
-                        $"SELECT TOP 100 * FROM [{testDbName}].[{testSchemaName}].[{testTableName}] WHERE [{column1}] = {TestInput.Text} ORDER BY [{column2}] DESC",
+                        $"SELECT TOP 100 * FROM [{testDbName}].[{testSchemaName}].[{testTableName}] WHERE [{column2}] = @Ginix_ID ORDER BY [{column2}] DESC",
                         connection);
+
+                command.Parameters.Add(new SqlParameter("@Ginix_ID", SqlDbType.Int, 10) { Value = TestInput.Text });
 
                 var sb = new StringBuilder();
                 using (var reader = command.ExecuteReader())
