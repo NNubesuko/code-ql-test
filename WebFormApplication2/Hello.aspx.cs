@@ -18,8 +18,8 @@ namespace WebFormApplication2
             var builder =
                 new SqlConnectionStringBuilder(Environment.GetEnvironmentVariable("TEST_CONNECTION"))
                 {
-                    UserID = Environment.GetEnvironmentVariable("TEST_USER_NAME"),
-                    Password = Environment.GetEnvironmentVariable("TEST_PASSWORD"),
+                    UserID = "User_0001",
+                    Password = "5AX0bCd-c8fca0PLa9",
                 };
             var connectionString = builder.ToString();
 
