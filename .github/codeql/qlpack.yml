@@ -1,4 +1,4 @@
-name: NNubesuko/code-ql-test
+name: nnubesuko/code-ql-test
 version: 1.0.0
 dependencies:
   codeql/csharp-all: "*"
