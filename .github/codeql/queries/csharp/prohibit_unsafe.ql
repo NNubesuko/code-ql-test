@@ -11,5 +11,13 @@
 
 import csharp
 
-from UnsafeBlock unsafeBlock
-select unsafeBlock, "This unsafe block should be reviewed or removed as 'unsafe' code is prohibited."
+// Unsafe declarations (methods, classes, etc.)
+from IHasModifiers decl
+where decl.hasModifier("unsafe")
+select decl, "This declaration uses the 'unsafe' keyword."
+
+union
+
+// Unsafe pointer types
+from PointerType pt
+select pt, "Pointer type usage may indicate unsafe code."
