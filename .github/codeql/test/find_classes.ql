@@ -1,13 +1,14 @@
 /**
+ * @id csharp/unsafe-code-prohibition
  * @name Prohibit unsafe code
  * @description Finds all uses of the 'unsafe' keyword in C# code and reports them as alerts.
- * @kind problem
- * @id csharp/unsafe-code-prohibition
  * @tags security
- * correctness
- * maintainability
- * unsafe
- * @severity error
+ *       correctness
+ *       maintainability
+ *       unsafe
+ * @kind problem
+ * @precision very-high
+ * @problem.severity error
  */
 
 import csharp
