@@ -4,4 +4,4 @@ dependencies:
   codeql/csharp-all: "*"
 extractor: csharp
 defaultSuite:
-  - pattern: queries
+  - query: queries
