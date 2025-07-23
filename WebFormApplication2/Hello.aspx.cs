@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Text;
 using System.Web.UI;
 
@@ -71,6 +72,14 @@ namespace WebFormApplication2
             }
 
             AddResult.Text = _x.ToString();
+        }
+
+        protected void ClickExecutionButton(object sender, EventArgs e)
+        {
+            var startInfo = new ProcessStartInfo("OutSide.exe");
+            startInfo.UseShellExecute = true;
+
+            Process.Start(startInfo);
         }
     }
 }

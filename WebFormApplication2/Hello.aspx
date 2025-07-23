@@ -18,6 +18,9 @@
         <asp:Label Text="Add Button" runat="server" />
         <asp:Label ID="AddResult" Text="" runat="server" />
         <asp:Button ID="AddButton" Text="Add" runat="server" OnClick="ClickAddButton" />
+        
+        <asp:Label Text="Execution Button" runat="server" />
+        <asp:Button ID="ExecutionButton" Text="Add" runat="server" OnClick="ClickExecutionButton" />
     </form>
 </body>
 </html>
