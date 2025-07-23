@@ -7,13 +7,34 @@
  * correctness
  * maintainability
  * unsafe
- * @severity error # ★Severityを追加
+ * @severity error
  */
 
 import csharp
 
-// C#の'unsafe'コンテキストを表す述語を使用
-// 'UnsafeContext' は C# ライブラリで 'unsafe' コードが許可される場所を識別します。
-from UnsafeContext uc
-where uc.isUnsafe() // ucが実際に'unsafe'キーワードによってマークされていることを確認
-select uc.getLocation(), "This code is marked with the 'unsafe' keyword and should be reviewed or removed."
+// Option 1: Find 'unsafe' methods
+from Method m
+where m.isUnsafe()
+select m, "Method '" + m.getName() + "' is marked as 'unsafe'."
+
+union
+
+// Option 2: Find 'unsafe' types (structs or classes)
+from Type t
+where t.isUnsafe()
+select t, "Type '" + t.getName() + "' is marked as 'unsafe'."
+
+union
+
+// Option 3: Find explicit 'unsafe' blocks (statements)
+// This captures explicit `unsafe { ... }` blocks
+from UnsafeStmt s
+select s, "An 'unsafe' statement block is used here."
+
+union
+
+// Option 4: Find 'fixed' statements, which implicitly require an unsafe context
+// Although 'fixed' statements are within an unsafe context, explicitly flagging them
+// ensures coverage even if the outer block isn't explicitly 'unsafe'.
+from FixedStmt fs
+select fs, "A 'fixed' statement is used here, requiring an 'unsafe' context."
