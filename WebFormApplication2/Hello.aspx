@@ -27,6 +27,11 @@
         <asp:TextBox ID="MatchText" runat="server" />
         <asp:Button ID="MatchButton" Text="Submit" runat="server" OnClick="ClickMatchButton" />
         <asp:Label ID="MatchOutput" Text="" runat="server" />
+        
+        <asp:Label Text="File Input" runat="server" />
+        <asp:TextBox ID="FileName" runat="server" />
+        <asp:Button ID="FileButton" Text="Submit" runat="server" OnClick="ClickFileButton" />
+        <asp:Label ID="FileOutput" Text="" runat="server" />
     </form>
 </body>
 </html>

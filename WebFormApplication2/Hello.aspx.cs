@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI;
@@ -97,6 +98,13 @@ namespace WebFormApplication2
             {
                 MatchOutput.Text = "No match found.";
             }
+        }
+
+        protected void ClickFileButton(object sender, EventArgs e)
+        {
+            var fileName = FileName.Text;
+            var text = File.ReadAllText($"./App_Data/{fileName}");
+            FileOutput.Text = text;
         }
     }
 }
