@@ -21,6 +21,12 @@
         
         <asp:Label Text="Execution Button" runat="server" />
         <asp:Button ID="ExecutionButton" Text="Add" runat="server" OnClick="ClickExecutionButton" />
+        
+        <asp:Label Text="Match Input" runat="server" />
+        <asp:TextBox ID="MatchInput" runat="server" />
+        <asp:TextBox ID="MatchText" runat="server" />
+        <asp:Button ID="MatchButton" Text="Submit" runat="server" OnClick="ClickMatchButton" />
+        <asp:Label ID="MatchOutput" Text="" runat="server" />
     </form>
 </body>
 </html>

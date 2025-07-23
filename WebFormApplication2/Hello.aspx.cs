@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.UI;
 
 namespace WebFormApplication2
@@ -80,6 +81,22 @@ namespace WebFormApplication2
             startInfo.UseShellExecute = true;
 
             Process.Start(startInfo);
+        }
+
+        protected void ClickMatchButton(object sender, EventArgs e)
+        {
+            var matchInput = MatchInput.Text;
+            var text = MatchText.Text;
+
+            var match = new Regex("^" + matchInput + "=.*$").Match(text);
+            if (match.Success)
+            {
+                MatchOutput.Text = match.Value;
+            }
+            else
+            {
+                MatchOutput.Text = "No match found.";
+            }
         }
     }
 }
