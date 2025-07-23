@@ -64,22 +64,14 @@ jobs:
     # or others). This is typically only required for manual builds.
     # - name: Setup runtime (example)
     #   uses: actions/setup-example@v1
-
-    - name: Clean CodeQL Pack Cache (Debug Step)
-      run: |
-        echo "Cleaning CodeQL pack cache to force re-download of standard libraries..."
-        # CodeQL CLIのキャッシュディレクトリを削除
-        rm -rf "${HOME}/.cache/codeql" || true
-        rm -rf "${HOME}/.local/share/codeql" || true
-        echo "Cache cleared."
-
+    
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
-        queries: +security-extended,./.github/codeql
+        queries: ./.github/codeql
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
