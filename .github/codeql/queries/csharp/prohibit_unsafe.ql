@@ -10,14 +10,22 @@
  */
 
 import csharp
+import csharp.semantics
 
-// Unsafe declarations (methods, classes, etc.)
-from IHasModifiers decl
-where decl.hasModifier("unsafe")
-select decl, "This declaration uses the 'unsafe' keyword."
+// Find declarations (classes, methods, etc.) using the 'unsafe' modifier
+predicate isUnsafeDeclaration(IHasModifiers m) {
+  m.hasModifier("unsafe")
+}
 
-union
+// Find usages of pointer types (e.g., int*, char*)
+predicate isPointerTypeUsage(PointerType pt) {
+  exists(pt)
+}
 
-// Unsafe pointer types
+from IHasModifiers m
+where isUnsafeDeclaration(m)
+select m, "This declaration uses the 'unsafe' keyword."
+
 from PointerType pt
-select pt, "Pointer type usage may indicate unsafe code."
+where isPointerTypeUsage(pt)
+select pt, "This pointer type may indicate usage of unsafe code."
