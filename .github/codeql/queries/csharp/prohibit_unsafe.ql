@@ -4,20 +4,12 @@
  * @kind problem
  * @id csharp/unsafe-code-prohibition
  * @tags security
- *       correctness
- *       maintainability
- *       unsafe
+ * correctness
+ * maintainability
+ * unsafe
  */
 
-import csharp
+import csharp // ★この行が重要です！
 
-from Declaration d
-where
-  d instanceof IHasModifiers and
-  ((IHasModifiers)d).hasModifier("unsafe")
-select d, "This declaration uses the 'unsafe' modifier."
-
-union
-
-from PointerType pt
-select pt, "This pointer type usage may indicate unsafe code."
+from UnsafeBlock unsafeBlock
+select unsafeBlock, "This unsafe block should be reviewed or removed as 'unsafe' code is prohibited."
