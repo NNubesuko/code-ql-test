@@ -9,6 +9,9 @@ namespace WebFormApplication2
 {
     public partial class Hello : Page
     {
+        readonly int _x = 0;
+        readonly int _y = 1;
+
         protected void Page_Load(object sender, EventArgs e)
         {
         }
@@ -18,8 +21,8 @@ namespace WebFormApplication2
             var builder =
                 new SqlConnectionStringBuilder(Environment.GetEnvironmentVariable("TEST_CONNECTION"))
                 {
-                    UserID = "User_0001",
-                    Password = "5AX0bCd-c8fca0PLa9",
+                    UserID = Environment.GetEnvironmentVariable("TEST_USER_NAME"),
+                    Password = Environment.GetEnvironmentVariable("TEST_PASSWORD"),
                 };
             var connectionString = builder.ToString();
 
@@ -55,6 +58,19 @@ namespace WebFormApplication2
                 var result = sb.ToString();
                 Output.Text = string.IsNullOrEmpty(result) ? "データ無し" : result;
             }
+        }
+
+        protected void ClickAddButton(object sender, EventArgs e)
+        {
+            unsafe
+            {
+                fixed (int* px = &_x, py = &_y)
+                {
+                    TestUtil.Add(px, py);
+                }
+            }
+
+            AddResult.Text = _x.ToString();
         }
     }
 }

@@ -14,6 +14,10 @@
         <asp:TextBox ID="TestInput" runat="server" />
         <asp:Button ID="TestButton" Text="Submit" runat="server" OnClick="ClickTestButton" />
         <asp:Label ID="Output" Text="" runat="server" />
+        
+        <asp:Label Text="Add Button" runat="server" />
+        <asp:Label ID="AddResult" Text="" runat="server" />
+        <asp:Button ID="AddButton" Text="Add" runat="server" OnClick="ClickAddButton" />
     </form>
 </body>
 </html>
