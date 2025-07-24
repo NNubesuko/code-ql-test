@@ -1,10 +1,9 @@
 /**
- * @id csharp/unsafe-code-prohibition
- * @name Prohibit unsafe code
- * @description Finds all uses of the 'unsafe' keyword in C# code and reports them as alerts.
- * @tags security
- *       correctness
- *       maintainability
+ * @id csharp/prohibit_unsafe
+ * @name unsafe を禁止する
+ * @description C# コード内で unsafe 検出しアラートとして報告します。
+ * @tags buffer-overflow
+ *       security
  *       unsafe
  * @kind problem
  * @precision very-high
@@ -14,34 +13,34 @@
 import csharp
 
 /**
- * Gets a location that corresponds to an 'unsafe' code construct.
+ * unsafe が使用されているコードに対応する場所を取得
  */
 predicate isUnsafeCodeLocation(Location loc, string message) {
-    // Option 1: Find 'unsafe' methods
-    exists(Method m |
-        m.isUnsafe() and
-        loc = m.getLocation() and
-        message = "Method '" + m.getName() + "' is marked as 'unsafe'."
-    )
-    or
-    // Option 2: Find 'unsafe' types (structs or classes)
-    exists(Type t |
-        t.isUnsafe() and
-        loc = t.getLocation() and
-        message = "Type '" + t.getName() + "' is marked as 'unsafe'."
-    )
-    or
-    // Option 3: Find explicit 'unsafe' blocks (statements)
-    exists(UnsafeStmt s |
-        loc = s.getLocation() and
-        message = "An 'unsafe' statement block is used here."
-    )
-    or
-    // Option 4: Find 'fixed' statements, which implicitly require an unsafe context
-    exists(FixedStmt fs |
-        loc = fs.getLocation() and
-        message = "A 'fixed' statement is used here, requiring an 'unsafe' context."
-    )
+  // unsafe を使用しているメソッドを取得
+  exists(Method m |
+    m.isUnsafe() and
+    loc = m.getLocation() and
+    message = "メソッド '" + m.getName() + "' に unsafe が指定されています。"
+  )
+  or
+  // unsafe を使用している型・構造体・クラスを取得
+  exists(Type t |
+    t.isUnsafe() and
+    loc = t.getLocation() and
+    message = "タイプ '" + t.getName() + "' に unsafe が指定されています。"
+  )
+  or
+  // unsafe ステートメントを取得
+  exists(UnsafeStmt s |
+    loc = s.getLocation() and
+    message = "unsafe ステートメントが使用されています。"
+  )
+  or
+  // fixed ステートメントを取得
+  exists(FixedStmt fs |
+    loc = fs.getLocation() and
+    message = "fixed ステートメントは unsafe が要求されます。"
+  )
 }
 
 from Location loc, string message
