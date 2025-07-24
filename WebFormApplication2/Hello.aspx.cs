@@ -43,8 +43,10 @@ namespace WebFormApplication2
 
                 var command =
                     new SqlCommand(
-                        $"SELECT TOP 100 * FROM [{testDbName}].[{testSchemaName}].[{testTableName}] WHERE [{column2}] = {TestInput.Text} ORDER BY [{column2}] DESC",
+                        $"SELECT TOP 100 * FROM [{testDbName}].[{testSchemaName}].[{testTableName}] WHERE [{column2}] = @Test ORDER BY [{column2}] DESC",
                         connection);
+
+                command.Parameters.Add(new SqlParameter("@Test", SqlDbType.Int, 10) { Value = TestInput.Text });
 
                 var sb = new StringBuilder();
                 using (var reader = command.ExecuteReader())
