@@ -12,26 +12,29 @@
     <form id="form1" runat="server">
         <asp:Label Text="Test Input" runat="server" />
         <asp:TextBox ID="TestInput" runat="server" />
-        <asp:Button ID="TestButton" Text="Submit" runat="server" OnClick="ClickTestButton" />
+        <asp:Button ID="TestButton" Text="TestButton" runat="server" OnClick="ClickTestButton" />
         <asp:Label ID="Output" Text="" runat="server" />
         
         <asp:Label Text="Add Button" runat="server" />
         <asp:Label ID="AddResult" Text="" runat="server" />
-        <asp:Button ID="AddButton" Text="Add" runat="server" OnClick="ClickAddButton" />
+        <asp:Button ID="AddButton" Text="AddButton" runat="server" OnClick="ClickAddButton" />
         
         <asp:Label Text="Execution Button" runat="server" />
-        <asp:Button ID="ExecutionButton" Text="Add" runat="server" OnClick="ClickExecutionButton" />
+        <asp:Button ID="ExecutionButton" Text="ExecutionButton" runat="server" OnClick="ClickExecutionButton" />
         
         <asp:Label Text="Match Input" runat="server" />
         <asp:TextBox ID="MatchInput" runat="server" />
         <asp:TextBox ID="MatchText" runat="server" />
-        <asp:Button ID="MatchButton" Text="Submit" runat="server" OnClick="ClickMatchButton" />
+        <asp:Button ID="MatchButton" Text="MatchButton" runat="server" OnClick="ClickMatchButton" />
         <asp:Label ID="MatchOutput" Text="" runat="server" />
         
         <asp:Label Text="File Input" runat="server" />
         <asp:TextBox ID="FileName" runat="server" />
-        <asp:Button ID="FileButton" Text="Submit" runat="server" OnClick="ClickFileButton" />
+        <asp:Button ID="FileButton" Text="FileButton" runat="server" OnClick="ClickFileButton" />
         <asp:Label ID="FileOutput" Text="" runat="server" />
+        
+        <asp:Button ID="ContextButton" Text="ContextButton" runat="server" OnClick="ClickContextButton" />
+        <asp:Label ID="ContextOutput" Text="" runat="server" />
     </form>
 </body>
 </html>
