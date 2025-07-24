@@ -14,41 +14,34 @@
 import csharp
 
 /**
- * Gets a location that corresponds to a ProcessStartInfo object where UseShellExecute is not set to false.
+ * Gets ProcessStartInfo allocations.
  */
-predicate isProcessStartInfoShellExecuteLocation(Location loc, string message) {
-  // Option 1: UseShellExecute is explicitly set to true
-  exists(Assignment assign, MemberAccess ma |
-    assign.getTarget() = ma and
-    ma.getMember().getName() = "UseShellExecute" and
-    assign.getSource() instanceof Literal and
-    assign.getSource().(Literal).getValue() = "true" and
-    exists(LocalVariable v |
-      ma.getBase() = v.getAnAccess() and
-      v.getType().getFullName() = "System.Diagnostics.ProcessStartInfo" and
-      loc = assign.getLocation() and
-      message = "ProcessStartInfo.UseShellExecute is explicitly set to true here."
+class ProcessStartInfoAlloc extends Expr {
+  ProcessStartInfoAlloc() {
+    this.getType().hasQualifiedName("System.Diagnostics", "ProcessStartInfo")
+  }
+}
+
+/**
+ * Gets assignments to UseShellExecute property for a given ProcessStartInfo object.
+ */
+predicate useShellExecuteSetTo(ProcessStartInfoAlloc psi, boolean isFalse) {
+  exists(PropertyAccess pa |
+    pa.getQualifier() = psi and
+    pa.getTarget().hasName("UseShellExecute") and
+    exists(Assignment assign |
+      assign.getLeftOperand() = pa and
+      (
+        (isFalse and assign.getRightOperand() instanceof BoolLiteral and assign.getRightOperand().(BoolLiteral).getValue() = false) or
+        (not isFalse and assign.getRightOperand() instanceof BoolLiteral and assign.getRightOperand().(BoolLiteral).getValue() = true)
+      )
     )
-  )
-  or
-  // Option 2: UseShellExecute is never set to false after construction (default is true)
-  exists(LocalVariable v, Expr e |
-    v.getType().getFullName() = "System.Diagnostics.ProcessStartInfo" and
-    v.getAnAccess() = e and
-    loc = e.getLocation() and
-    not exists(Assignment assignF, MemberAccess maF |
-      assignF.getTarget() = maF and
-      maF.getMember().getName() = "UseShellExecute" and
-      maF.getBase() = v.getAnAccess() and
-      assignF.getSource() instanceof Literal and
-      assignF.getSource().(Literal).getValue() = "false"
-    ) and
-    // Must be used in a context (such as assignment, method argument, etc.)
-    exists(Call c | c.getArgument(_) = e) and
-    message = "ProcessStartInfo.UseShellExecute is not set to false. Default (true) is used."
   )
 }
 
-from Location loc, string message
-where isProcessStartInfoShellExecuteLocation(loc, message)
-select loc, message
+from ProcessStartInfoAlloc psi
+where
+  // Option 1: UseShellExecute is set to true anywhere
+  useShellExecuteSetTo(psi, false) = false or
+  useShellExecuteSetTo(psi, false) = undefined
+select psi, "ProcessStartInfo.UseShellExecute is not explicitly set to false after allocation."
