@@ -116,6 +116,7 @@ namespace WebFormApplication2
         {
             var hello = HelloContext.Get();
             ContextOutput.Text = string.IsNullOrEmpty(hello) ? "No context found." : hello;
+            ContextOutput.Text += "<br>" + Session.SessionID;
         }
     }
 }
