@@ -14,40 +14,50 @@
 import csharp
 
 /**
- * Local variable of type ProcessStartInfo
+ * Detects allocations of System.Diagnostics.ProcessStartInfo.
  */
-class ProcessStartInfoVar extends LocalVariable {
-  ProcessStartInfoVar() {
-    this.getType().hasQualifiedName("System.Diagnostics", "ProcessStartInfo")
+class PSIAlloc extends AllocationExpr {
+  PSIAlloc() {
+    this.getAllocatedType().getName() = "ProcessStartInfo" and
+    this.getAllocatedType().getNamespace() = "System.Diagnostics"
   }
 }
 
 /**
- * Returns true if the variable is assigned UseShellExecute = false somewhere.
+ * Gets local variables of type ProcessStartInfo initialized by a 'new' expression.
  */
-predicate useShellExecuteSetToFalse(ProcessStartInfoVar v) {
+class PSILocalVar extends LocalVariable {
+  PSILocalVar() {
+    this.getType().getName() = "ProcessStartInfo" and
+    this.getType().getNamespace() = "System.Diagnostics"
+  }
+
+  PSIAlloc getInitAlloc() {
+    exists(PSIAlloc a |
+      a = this.getInitializerExpr()
+    )
+    result = this.getInitializerExpr() instanceof PSIAlloc
+      ? this.getInitializerExpr() as PSIAlloc
+      : null
+  }
+}
+
+/**
+ * Returns true if UseShellExecute is set to false for the given variable.
+ */
+predicate useShellExecuteSetToFalse(PSILocalVar v) {
   exists(PropertyWrite pw |
-    pw.getTarget().getQualifier() instanceof LocalVariableAccess and
-    pw.getTarget().getQualifier().(LocalVariableAccess).getLocalVariable() = v and
-    pw.getTarget().getTarget().hasName("UseShellExecute") and
+    pw.getTarget().getName() = "UseShellExecute" and
+    pw.getQualifier() instanceof LocalVariableAccess and
+    pw.getQualifier().(LocalVariableAccess).getLocalVariable() = v and
     pw.getAssignedValue() instanceof BoolLiteral and
     pw.getAssignedValue().(BoolLiteral).getValue() = false
   )
 }
 
 /**
- * Returns true if the variable is assigned UseShellExecute = true somewhere.
+ * Main query: ProcessStartInfo local vars where UseShellExecute is NOT set to false.
  */
-predicate useShellExecuteSetToTrue(ProcessStartInfoVar v) {
-  exists(PropertyWrite pw |
-    pw.getTarget().getQualifier() instanceof LocalVariableAccess and
-    pw.getTarget().getQualifier().(LocalVariableAccess).getLocalVariable() = v and
-    pw.getTarget().getTarget().hasName("UseShellExecute") and
-    pw.getAssignedValue() instanceof BoolLiteral and
-    pw.getAssignedValue().(BoolLiteral).getValue() = true
-  )
-}
-
-from ProcessStartInfoVar v
+from PSILocalVar v
 where not useShellExecuteSetToFalse(v)
-select v.getLocation(), "ProcessStartInfo variable '" + v.getName() + "' does not have UseShellExecute explicitly set to false. Default (true) or explicitly true may be insecure."
+select v.getLocation(), "ProcessStartInfo variable '" + v.getName() + "' does not have UseShellExecute explicitly set to false. This is insecure."
