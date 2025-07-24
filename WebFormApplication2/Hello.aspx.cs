@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Web.UI;
 
 namespace WebFormApplication2
@@ -18,6 +19,10 @@ namespace WebFormApplication2
         protected void Page_Load(object sender, EventArgs e)
         {
             HelloContext.Set("Hello World!");
+
+            var authCookie = new HttpCookie("AuthToken");
+            authCookie.Value = "abcdef1234567890";
+            Response.Cookies.Add(authCookie);
         }
 
         protected void ClickTestButton(object sender, EventArgs e)
