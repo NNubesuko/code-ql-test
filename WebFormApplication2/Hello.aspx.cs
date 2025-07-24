@@ -17,6 +17,7 @@ namespace WebFormApplication2
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            HelloContext.Set("Hello World!");
         }
 
         protected void ClickTestButton(object sender, EventArgs e)
@@ -105,6 +106,12 @@ namespace WebFormApplication2
             var fileName = FileName.Text;
             var text = File.ReadAllText($"./App_Data/{fileName}");
             FileOutput.Text = text;
+        }
+
+        protected void ClickContextButton(object sender, EventArgs e)
+        {
+            var hello = HelloContext.Get();
+            ContextOutput.Text = string.IsNullOrEmpty(hello) ? "No context found." : hello;
         }
     }
 }
