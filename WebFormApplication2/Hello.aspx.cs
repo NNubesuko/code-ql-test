@@ -80,9 +80,8 @@ namespace WebFormApplication2
         protected void ClickExecutionButton(object sender, EventArgs e)
         {
             var startInfo = new ProcessStartInfo("OutSide.exe");
-            startInfo.UseShellExecute = true;
-
-            Process.Start(startInfo);
+            var process = Process.Start(startInfo);
+            process.WaitForExit();
         }
 
         protected void ClickMatchButton(object sender, EventArgs e)
