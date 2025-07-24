@@ -14,34 +14,40 @@
 import csharp
 
 /**
- * Gets ProcessStartInfo allocations.
+ * Local variable of type ProcessStartInfo
  */
-class ProcessStartInfoAlloc extends Expr {
-  ProcessStartInfoAlloc() {
+class ProcessStartInfoVar extends LocalVariable {
+  ProcessStartInfoVar() {
     this.getType().hasQualifiedName("System.Diagnostics", "ProcessStartInfo")
   }
 }
 
 /**
- * Gets assignments to UseShellExecute property for a given ProcessStartInfo object.
+ * Returns true if the variable is assigned UseShellExecute = false somewhere.
  */
-predicate useShellExecuteSetTo(ProcessStartInfoAlloc psi, boolean isFalse) {
-  exists(PropertyAccess pa |
-    pa.getQualifier() = psi and
-    pa.getTarget().hasName("UseShellExecute") and
-    exists(Assignment assign |
-      assign.getLeftOperand() = pa and
-      (
-        (isFalse and assign.getRightOperand() instanceof BoolLiteral and assign.getRightOperand().(BoolLiteral).getValue() = false) or
-        (not isFalse and assign.getRightOperand() instanceof BoolLiteral and assign.getRightOperand().(BoolLiteral).getValue() = true)
-      )
-    )
+predicate useShellExecuteSetToFalse(ProcessStartInfoVar v) {
+  exists(PropertyWrite pw |
+    pw.getTarget().getQualifier() instanceof LocalVariableAccess and
+    pw.getTarget().getQualifier().(LocalVariableAccess).getLocalVariable() = v and
+    pw.getTarget().getTarget().hasName("UseShellExecute") and
+    pw.getAssignedValue() instanceof BoolLiteral and
+    pw.getAssignedValue().(BoolLiteral).getValue() = false
   )
 }
 
-from ProcessStartInfoAlloc psi
-where
-  // Option 1: UseShellExecute is set to true anywhere
-  useShellExecuteSetTo(psi, false) = false or
-  useShellExecuteSetTo(psi, false) = undefined
-select psi, "ProcessStartInfo.UseShellExecute is not explicitly set to false after allocation."
+/**
+ * Returns true if the variable is assigned UseShellExecute = true somewhere.
+ */
+predicate useShellExecuteSetToTrue(ProcessStartInfoVar v) {
+  exists(PropertyWrite pw |
+    pw.getTarget().getQualifier() instanceof LocalVariableAccess and
+    pw.getTarget().getQualifier().(LocalVariableAccess).getLocalVariable() = v and
+    pw.getTarget().getTarget().hasName("UseShellExecute") and
+    pw.getAssignedValue() instanceof BoolLiteral and
+    pw.getAssignedValue().(BoolLiteral).getValue() = true
+  )
+}
+
+from ProcessStartInfoVar v
+where not useShellExecuteSetToFalse(v)
+select v.getLocation(), "ProcessStartInfo variable '" + v.getName() + "' does not have UseShellExecute explicitly set to false. Default (true) or explicitly true may be insecure."
