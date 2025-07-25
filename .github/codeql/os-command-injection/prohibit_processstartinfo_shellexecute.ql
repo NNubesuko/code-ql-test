@@ -1,11 +1,10 @@
 /**
- * @id csharp/processstartinfo-use-shellexecute-prohibition
- * @name Prohibit UseShellExecute not set to false in ProcessStartInfo
- * @description Finds all uses of System.Diagnostics.ProcessStartInfo where the UseShellExecute property is not explicitly set to false.
- * @tags security
- *       correctness
- *       maintainability
- *       process
+ * @id csharp/prohibit_processstartinfo_shellexecute
+ * @name ProcessStartInfo.UseShellExecute の有効化を禁止する
+ * @description C# コード内で ProcessStartInfo.UseShellExecute が false 以外に設定されているコードを検出しアラートとして報告します。
+ * @tags os-command-injection
+ *       security
+ *       shellexecute
  * @kind problem
  * @precision very-high
  * @problem.severity error
@@ -14,50 +13,53 @@
 import csharp
 
 /**
- * Detects allocations of System.Diagnostics.ProcessStartInfo.
+ * ProcessStartInfo オブジェクトの作成または使用状況を取得
  */
-class PSIAlloc extends AllocationExpr {
-  PSIAlloc() {
-    this.getAllocatedType().getName() = "ProcessStartInfo" and
-    this.getAllocatedType().getNamespace() = "System.Diagnostics"
+class ProcessStartInfoCreation extends ObjectCreation {
+  ProcessStartInfoCreation() {
+    this.getType().hasName("ProcessStartInfo")
   }
 }
 
 /**
- * Gets local variables of type ProcessStartInfo initialized by a 'new' expression.
+ * UseShellExecute へのプロパティアクセスを取得
  */
-class PSILocalVar extends LocalVariable {
-  PSILocalVar() {
-    this.getType().getName() = "ProcessStartInfo" and
-    this.getType().getNamespace() = "System.Diagnostics"
-  }
-
-  PSIAlloc getInitAlloc() {
-    exists(PSIAlloc a |
-      a = this.getInitializerExpr()
-    )
-    result = this.getInitializerExpr() instanceof PSIAlloc
-      ? this.getInitializerExpr() as PSIAlloc
-      : null
+class UseShellExecuteAccess extends PropertyAccess {
+  UseShellExecuteAccess() {
+    this.getTarget().hasName("UseShellExecute") and
+    this.getQualifier().getType().hasName("ProcessStartInfo")
   }
 }
 
 /**
- * Returns true if UseShellExecute is set to false for the given variable.
+ * UseShellExecute が false 以外のコードに対応する場所を取得
  */
-predicate useShellExecuteSetToFalse(PSILocalVar v) {
-  exists(PropertyWrite pw |
-    pw.getTarget().getName() = "UseShellExecute" and
-    pw.getQualifier() instanceof LocalVariableAccess and
-    pw.getQualifier().(LocalVariableAccess).getLocalVariable() = v and
-    pw.getAssignedValue() instanceof BoolLiteral and
-    pw.getAssignedValue().(BoolLiteral).getValue() = false
+predicate isUseShellExecuteCodeLocation(Location loc, string message) {
+  exists(ProcessStartInfoCreation psi |
+    // UseShellExecute へ明示的に false に設定されているかチェック
+    not exists(Assignment assign, VariableAccess va |
+      assign.getLValue().(UseShellExecuteAccess).getQualifier() = va and
+      va.getTarget().getAnAssignedValue() = psi and
+      assign.getRValue().(BoolLiteral).getBoolValue() = false
+    ) and
+    // UseShellExecute イニシャライザで明示的に false に設定されているかどうかをチェック
+    not exists(MemberInitializer init |
+      init.getParent() = psi and
+      init.getLValue().(PropertyAccess).getTarget().hasName("UseShellExecute") and
+      init.getRValue().(BoolLiteral).getBoolValue() = false
+    ) and
+    loc = psi.getLocation() and
+    message = "ProcessStartInfo 初期化時に UseShellExecute へ false が明示的に設定されていません。"
+  )
+  or
+  exists(UseShellExecuteAccess access, Assignment assign |
+    assign.getLValue() = access and
+    not assign.getRValue().(BoolLiteral).getBoolValue() = false and
+    loc = assign.getLocation() and
+    message = "UseShellExecute へ false が明示的に設定されていません。"
   )
 }
 
-/**
- * Main query: ProcessStartInfo local vars where UseShellExecute is NOT set to false.
- */
-from PSILocalVar v
-where not useShellExecuteSetToFalse(v)
-select v.getLocation(), "ProcessStartInfo variable '" + v.getName() + "' does not have UseShellExecute explicitly set to false. This is insecure."
+from Location loc, string message
+where isUseShellExecuteCodeLocation(loc, message)
+select loc, message
